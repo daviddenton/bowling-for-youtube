@@ -21,12 +21,13 @@ data class PlayableGame(
     private val frameCount: Int,
     override val frames: List<Frame> = playerNames.map { PlayableFrame(playerNames.map { NewPlayerFrame }) }
 ) : Game {
-    val currentPlayer
-        get() = when (val currentIndex = frames
-            .filterIsInstance<PlayableFrame>()
-            .first().currentPlayer) {
-            -1 -> playerNames.first()
-            else -> playerNames[currentIndex]
+    val currentPlayer: String
+        get() {
+            val currentIndex = frames.filterIsInstance<PlayableFrame>().first().currentPlayer
+            return when {
+                currentIndex == -1 -> playerNames.first()
+                else -> playerNames[currentIndex]
+            }
         }
 
     fun roll(count: PinCount): Game {
@@ -111,13 +112,11 @@ data class Open(override val score: PinCount) : PlayablePlayerFrame {
 
 data object Strike : CompletedPlayerFrame {
     override val score = PinCount(10)
-
     override fun toString() = "[ ][X]"
 }
 
 data class Spare(private val first: PinCount) : CompletedPlayerFrame {
     override val score = PinCount((10))
-
     override fun toString() = "[$first][/]"
 }
 
