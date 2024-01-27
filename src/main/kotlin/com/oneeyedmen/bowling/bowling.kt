@@ -23,7 +23,10 @@ data class PlayableGame(
 ) : Game {
     val currentPlayer: String
         get() {
-            val currentIndex = frames.filterIsInstance<PlayableFrame>().first().currentPlayer
+            val currentIndex =
+                frames.filterIsInstance<PlayableFrame>()
+                    .map { frames.indexOfFirst { it is PlayablePlayerFrame } }
+                    .first()
             return when {
                 currentIndex == -1 -> playerNames.first()
                 else -> playerNames[currentIndex]
@@ -68,8 +71,6 @@ class CompletedFrame(override val frames: List<PlayerFrame>) : Frame
 data class CompletedGame(override val playerNames: List<String>, override val frames: List<Frame>) : Game
 
 data class PlayableFrame(override val frames: List<PlayerFrame>) : Frame {
-    val currentPlayer get() = frames.indexOfFirst { it is PlayablePlayerFrame }
-
     fun roll(count: PinCount): Frame {
         val start = frames.filterIsInstance<PlayablePlayerFrame>().first()
         val next = start.roll(count)
