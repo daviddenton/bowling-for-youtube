@@ -32,16 +32,17 @@ class BowlingTests {
         game = game.roll(PinCount(1)) as PlayableGame
         expectThat(game.currentPlayer).isEqualTo("Fred")
         game = game.roll(PinCount(2)) as PlayableGame
+        println(game)
         expectThat(game.currentPlayer).isEqualTo("Barney")
         game = game.roll(PinCount(3)) as PlayableGame
         expectThat(game.currentPlayer).isEqualTo("Barney")
         game = game.roll(PinCount(4)) as PlayableGame
         expectThat(game.currentPlayer).isEqualTo("Fred")
         game = game.roll(PinCount(5)) as PlayableGame
-        game = game.roll(PinCount(6)) as PlayableGame
+        game = game.roll(PinCount(3)) as PlayableGame
         expectThat(game.currentPlayer).isEqualTo("Barney")
         game = game.roll(PinCount(7)) as PlayableGame
-        game = game.roll(PinCount(8))
+        game = game.roll(PinCount(2))
         assertTrue(game is CompletedGame)
     }
 
@@ -68,59 +69,57 @@ class BowlingTests {
         )
     }
 
-    @Test fun `render scorecard`() {
+    @Test
+    fun `render scorecard`() {
         var game: Game
         game = Game("Fred", "Barney", frameCount = 2) as PlayableGame
-        expectThat(game.toScorecard()).isEqualTo("""
+        expectThat(game.toScorecard()).isEqualTo(
+            """
             Fred [ ][ ] 000 [ ][ ] 000
             Barney [ ][ ] 000 [ ][ ] 000
-        """.trimIndent())
+        """.trimIndent()
+        )
         game = game.roll(PinCount(1)) as PlayableGame
-        expectThat(game.toScorecard()).isEqualTo("""
+        expectThat(game.toScorecard()).isEqualTo(
+            """
             Fred [1][ ] 000 [ ][ ] 000
             Barney [ ][ ] 000 [ ][ ] 000
-        """.trimIndent())
+        """.trimIndent()
+        )
         game = game.roll(PinCount(2)) as PlayableGame
-        expectThat(game.toScorecard()).isEqualTo("""
+        expectThat(game.toScorecard()).isEqualTo(
+            """
             Fred [1][2] 000 [ ][ ] 000
             Barney [ ][ ] 000 [ ][ ] 000
-        """.trimIndent())
+        """.trimIndent()
+        )
         game = game.roll(PinCount(10)) as PlayableGame
-        expectThat(game.toScorecard()).isEqualTo("""
+        expectThat(game.toScorecard()).isEqualTo(
+            """
             Fred [1][2] 000 [ ][ ] 000
             Barney [ ][X] 000 [ ][ ] 000
-        """.trimIndent())
+        """.trimIndent()
+        )
         game = game.roll(PinCount(9)) as PlayableGame
-        expectThat(game.toScorecard()).isEqualTo("""
+        expectThat(game.toScorecard()).isEqualTo(
+            """
             Fred [1][2] 000 [9][ ] 000
             Barney [ ][X] 000 [ ][ ] 000
-        """.trimIndent())
+        """.trimIndent()
+        )
         game = game.roll(PinCount(1)) as PlayableGame
-        expectThat(game.toScorecard()).isEqualTo("""
+        expectThat(game.toScorecard()).isEqualTo(
+            """
             Fred [1][2] 000 [9][/] 000
             Barney [ ][X] 000 [ ][ ] 000
-        """.trimIndent())
+        """.trimIndent()
+        )
         game = game.roll(PinCount(0)) as PlayableGame
-        expectThat(game.toScorecard()).isEqualTo("""
+        expectThat(game.toScorecard()).isEqualTo(
+            """
             Fred [1][2] 000 [9][/] 000
             Barney [ ][X] 000 [-][ ] 000
-        """.trimIndent())
-
+        """.trimIndent()
+        )
     }
 }
-
-private fun Game.toScorecard(): String {
-    return this.lines.joinToString("\n") { line -> line.toScorecard() }
-}
-
-private fun Line.toScorecard() = (listOf(playerName) + frames.map { it.toScorecard() }).joinToString(" ")
-
-private fun Frame.toScorecard() = when(this) {
-    is UnplayedFrame -> "[ ][ ] 000"
-    is InProgressFrame -> "[${roll1}][ ] 000"
-    is NormalCompletedFrame -> toScorecard()
-    is Strike -> "[ ][X] 000"
-}
-
-@Suppress("IMPLICIT_CAST_TO_ANY")
-private fun NormalCompletedFrame.toScorecard() = "[${roll1}][${if (isSpare) "/" else roll2}] 000"
