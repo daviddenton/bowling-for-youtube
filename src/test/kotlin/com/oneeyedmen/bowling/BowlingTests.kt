@@ -71,53 +71,124 @@ class BowlingTests {
     @Test
     fun `render scorecard`() {
         var game: Game
-        game = Game("Fred", "Barney", frameCount = 2) as PlayableGame
+        game = Game("Fred  ", "Barney", frameCount = 2) as PlayableGame
         expectThat(game.toScorecard()).isEqualTo(
             """
-            Fred [ ][ ] 000 [ ][ ] 000
-            Barney [ ][ ] 000 [ ][ ] 000
+            Fred   [ ][ ]     [ ][ ]    .
+            Barney [ ][ ]     [ ][ ]    .
         """.trimIndent()
         )
         game = game.roll(PinCount(1)) as PlayableGame
         expectThat(game.toScorecard()).isEqualTo(
             """
-            Fred [1][ ] 000 [ ][ ] 000
-            Barney [ ][ ] 000 [ ][ ] 000
+            Fred   [1][ ] 001 [ ][ ]    .
+            Barney [ ][ ]     [ ][ ]    .
         """.trimIndent()
         )
         game = game.roll(PinCount(2)) as PlayableGame
         expectThat(game.toScorecard()).isEqualTo(
             """
-            Fred [1][2] 000 [ ][ ] 000
-            Barney [ ][ ] 000 [ ][ ] 000
+            Fred   [1][2] 003 [ ][ ]    .
+            Barney [ ][ ]     [ ][ ]    .
         """.trimIndent()
         )
         game = game.roll(PinCount(10)) as PlayableGame
         expectThat(game.toScorecard()).isEqualTo(
             """
-            Fred [1][2] 000 [ ][ ] 000
-            Barney [ ][X] 000 [ ][ ] 000
+            Fred   [1][2] 003 [ ][ ]    .
+            Barney [ ][X] 010 [ ][ ]    .
         """.trimIndent()
         )
         game = game.roll(PinCount(9)) as PlayableGame
         expectThat(game.toScorecard()).isEqualTo(
             """
-            Fred [1][2] 000 [9][ ] 000
-            Barney [ ][X] 000 [ ][ ] 000
+            Fred   [1][2] 003 [9][ ] 012.
+            Barney [ ][X] 010 [ ][ ]    .
         """.trimIndent()
         )
         game = game.roll(PinCount(1)) as PlayableGame
         expectThat(game.toScorecard()).isEqualTo(
             """
-            Fred [1][2] 000 [9][/] 000
-            Barney [ ][X] 000 [ ][ ] 000
+            Fred   [1][2] 003 [9][/] 013.
+            Barney [ ][X] 010 [ ][ ]    .
         """.trimIndent()
         )
         game = game.roll(PinCount(0)) as PlayableGame
         expectThat(game.toScorecard()).isEqualTo(
             """
-            Fred [1][2] 000 [9][/] 000
-            Barney [ ][X] 000 [-][ ] 000
+            Fred   [1][2] 003 [9][/] 013.
+            Barney [ ][X] 010 [-][ ] 010.
+        """.trimIndent()
+        )
+        game = game.roll(PinCount(0)) as CompletedGame
+        expectThat(game.toScorecard()).isEqualTo(
+            """
+            Fred   [1][2] 003 [9][/] 013.
+            Barney [ ][X] 010 [-][-] 010.
+        """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `render strikes`() {
+        var game: Game
+        game = Game("Fred  ", frameCount = 2) as PlayableGame
+        expectThat(game.toScorecard()).isEqualTo(
+            """
+            Fred   [ ][ ]     [ ][ ]    .
+        """.trimIndent()
+        )
+        game = game.roll(PinCount(10)) as PlayableGame
+        expectThat(game.toScorecard()).isEqualTo(
+            """
+            Fred   [ ][X] 010 [ ][ ]    .
+        """.trimIndent()
+        )
+        game = game.roll(PinCount(1)) as PlayableGame
+        expectThat(game.toScorecard()).isEqualTo(
+            """
+            Fred   [ ][X] 011 [1][ ] 012.
+        """.trimIndent()
+        )
+        game = game.roll(PinCount(2)) as CompletedGame
+        expectThat(game.toScorecard()).isEqualTo(
+            """
+            Fred   [ ][X] 013 [1][2] 016.
+        """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `render spares`() {
+        var game: Game
+        game = Game("Fred  ", frameCount = 2) as PlayableGame
+        expectThat(game.toScorecard()).isEqualTo(
+            """
+            Fred   [ ][ ]     [ ][ ]    .
+        """.trimIndent()
+        )
+        game = game.roll(PinCount(9)) as PlayableGame
+        expectThat(game.toScorecard()).isEqualTo(
+            """
+            Fred   [9][ ] 009 [ ][ ]    .
+        """.trimIndent()
+        )
+        game = game.roll(PinCount(1)) as PlayableGame
+        expectThat(game.toScorecard()).isEqualTo(
+            """
+            Fred   [9][/] 010 [ ][ ]    .
+        """.trimIndent()
+        )
+        game = game.roll(PinCount(2)) as PlayableGame
+        expectThat(game.toScorecard()).isEqualTo(
+            """
+            Fred   [9][/] 012 [2][ ] 014.
+        """.trimIndent()
+        )
+        game = game.roll(PinCount(3)) as CompletedGame
+        expectThat(game.toScorecard()).isEqualTo(
+            """
+            Fred   [9][/] 012 [2][3] 017.
         """.trimIndent()
         )
     }

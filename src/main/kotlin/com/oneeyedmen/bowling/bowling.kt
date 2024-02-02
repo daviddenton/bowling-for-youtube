@@ -25,7 +25,7 @@ data class PlayableGame(
         get() {
             val currentIndex =
                 frames.filterIsInstance<PlayableFrame>()
-                    .map { frames.indexOfFirst { it is PlayablePlayerFrame } }
+                    .map { it.frames.indexOfFirst { it is PlayablePlayerFrame } }
                     .first()
             return when {
                 currentIndex == -1 -> playerNames.first()
