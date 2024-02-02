@@ -32,7 +32,6 @@ class BowlingTests {
         game = game.roll(PinCount(1)) as PlayableGame
         expectThat(game.currentPlayer).isEqualTo("Fred")
         game = game.roll(PinCount(2)) as PlayableGame
-        println(game)
         expectThat(game.currentPlayer).isEqualTo("Barney")
         game = game.roll(PinCount(3)) as PlayableGame
         expectThat(game.currentPlayer).isEqualTo("Barney")
